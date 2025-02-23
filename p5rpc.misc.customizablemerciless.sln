@@ -5,6 +5,10 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "p5rpc.misc.customizablemerciless", "p5rpc.misc.customizablemerciless\p5rpc.misc.customizablemerciless.csproj", "{0AAFE3CE-E2BD-4CD7-B018-6BDE4B22F920}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodule", "submodule", "{CE3C29C3-9EC7-4790-AD9A-F14CFFD2C4E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BF.File.Emulator.Interfaces", "Emulator\Interfaces\BF.File.Emulator.Interfaces\Emulator\Interfaces\BF.File.Emulator.Interfaces\BF.File.Emulator.Interfaces.csproj", "{EEAD28AA-76DF-4B4C-ACAB-E3A0236FA68D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{0AAFE3CE-E2BD-4CD7-B018-6BDE4B22F920}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AAFE3CE-E2BD-4CD7-B018-6BDE4B22F920}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AAFE3CE-E2BD-4CD7-B018-6BDE4B22F920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEAD28AA-76DF-4B4C-ACAB-E3A0236FA68D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEAD28AA-76DF-4B4C-ACAB-E3A0236FA68D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEAD28AA-76DF-4B4C-ACAB-E3A0236FA68D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEAD28AA-76DF-4B4C-ACAB-E3A0236FA68D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EEAD28AA-76DF-4B4C-ACAB-E3A0236FA68D} = {CE3C29C3-9EC7-4790-AD9A-F14CFFD2C4E6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {21E08A23-FB13-4A67-A134-FCC5A7C95CB8}

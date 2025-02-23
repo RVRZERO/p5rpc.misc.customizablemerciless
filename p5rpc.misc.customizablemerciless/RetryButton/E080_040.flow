@@ -1,0 +1,197 @@
+void e080_040_000_hook()
+{
+    int var2;
+    int var3;
+    int var4;
+    int var1;
+    int var5;
+    int var0;
+    BIT_OFF(124);
+    BIT_OFF(123);
+    BIT_OFF(125);
+    var2 = ((((((var2 + 1) + 2) + 4) + 8) + 0x10) + 0x20);
+    var3 = GET_COUNT(1);
+    
+    if (BIT_CHK(122) == 1)
+    {
+        var2 = (var2 - 0x20);
+    }
+    else 
+    {
+        
+        if (FLD_CHECK_BOSS() == 1)
+        {
+            var2 = (var2 - 1);
+        }
+
+        
+        if (( 1 ) && (BIT_CHK(6331) == 0))
+        {
+            var4 = FLD_GET_BKUP_FIELD_TYPE();
+            
+            if (var4 == 2)
+            {
+                var2 = (var2 - 2);
+            }
+            else if (var4 == 1)
+            {
+                var2 = (var2 - 4);
+            }
+            else if (var4 == 0)
+            {
+                var2 = (var2 - 8);
+            }
+
+        }
+
+        
+        if ((BIT_CHK(12310) == 0) && (BIT_CHK(6224) == 1))
+        {
+            
+            if (var3 < 7)
+            {
+                var2 = (var2 - 0x20);
+            }
+            else 
+            {
+                var2 = (var2 - 0x10);
+            }
+
+        }
+
+    }
+
+    _15:
+    
+    if (1)
+    {
+        var1 = -1;
+        MSG_WND_DSP();
+        MSG_SYSTEM(SYS_000_0_0);
+        
+        if (BIT_CHK(12310) == 0)
+        {
+            var5 = 1;
+        }
+        else 
+        {
+            var5 = 2;
+        }
+
+        SEL_MASK(var2);
+        var0 = SEL(var5);
+        MSG_WND_CLS();
+        
+        if (var0 == 0)
+        {
+            BIT_ON(124);
+            goto _16;
+        }
+        else if (var0 == 1)
+        {
+            SEL_DEFKEY(14, 1);
+            MSG_WND_DSP();
+            
+            if (BIT_CHK(12310) == 0)
+            {
+                MSG_SYSTEM(SEL_001_1_0_A);
+            }
+            else 
+            {
+                MSG_SYSTEM(SEL_001_1_0_AT_A);
+            }
+
+            var1 = SEL(SEL_YES_NO);
+            MSG_WND_CLS();
+            
+            if (var1 == 0)
+            {
+                SET_COUNT(157, 0);
+                BIT_ON(123);
+                goto _16;
+            }
+            else 
+            {
+                SYNC();
+            }
+
+        }
+        else if (var0 == 2)
+        {
+            SEL_DEFKEY(14, 1);
+            MSG_WND_DSP();
+            
+            if (BIT_CHK(12310) == 0)
+            {
+                MSG_SYSTEM(SEL_001_1_0_B);
+            }
+            else 
+            {
+                MSG_SYSTEM(SEL_001_1_0_AT_B);
+            }
+
+            var1 = SEL(SEL_YES_NO);
+            MSG_WND_CLS();
+            
+            if (var1 == 0)
+            {
+                BIT_ON(123);
+                goto _16;
+            }
+            else 
+            {
+                SYNC();
+            }
+
+        }
+        else if (var0 == 3)
+        {
+            SEL_DEFKEY(14, 1);
+            MSG_WND_DSP();
+            MSG_SYSTEM(SEL_001_1_0_D);
+            var1 = SEL(SEL_YES_NO);
+            MSG_WND_CLS();
+            
+            if (var1 == 0)
+            {
+                SET_COUNT(157, 1);
+                BIT_ON(123);
+                goto _16;
+            }
+            else 
+            {
+                SYNC();
+            }
+
+        }
+        else if ((var0 == 4) || (var0 == 5))
+        {
+            BIT_ON(125);
+            goto _16;
+        }
+        else 
+        {
+            SEL_DEFKEY(14, 1);
+            MSG_WND_DSP();
+            MSG_SYSTEM(SEL_001_1_0_C);
+            var1 = SEL(SEL_YES_NO);
+            MSG_WND_CLS();
+            
+            if (var1 == 0)
+            {
+                goto _16;
+            }
+            else 
+            {
+                SYNC();
+            }
+
+        }
+
+        goto _15;
+    }
+
+    _16:
+    return;
+}
+
