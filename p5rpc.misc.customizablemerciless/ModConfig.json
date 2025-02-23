@@ -1,0 +1,29 @@
+{
+  "ModId": "p5rpc.misc.customizablemerciless",
+  "ModName": "Customizable Merciless",
+  "ModAuthor": "RVRZERO",
+  "ModVersion": "1.0.0",
+  "ModDescription": "Let you customize Merciless difficulty multipliers!",
+  "ModDll": "p5rpc.misc.customizablemerciless.dll",
+  "ModIcon": "Preview.png",
+  "ModR2RManagedDll32": "x86/p5rpc.misc.customizablemerciless.dll",
+  "ModR2RManagedDll64": "x64/p5rpc.misc.customizablemerciless.dll",
+  "ModNativeDll32": "",
+  "ModNativeDll64": "",
+  "IsLibrary": false,
+  "ReleaseMetadataFileName": "p5rpc.misc.customizablemerciless.ReleaseMetadata.json",
+  "PluginData": {},
+  "IsUniversalMod": false,
+  "ModDependencies": [
+    "crifs.v2.hook",
+    "p5rpc.modloader",
+    "reloaded.universal.fileemulationframework.bf",
+    "Reloaded.Memory.SigScan.ReloadedII",
+    "reloaded.sharedlib.hooks"
+  ],
+  "OptionalDependencies": [],
+  "SupportedAppId": [
+    "p5r.exe"
+  ],
+  "ProjectUrl": ""
+}
