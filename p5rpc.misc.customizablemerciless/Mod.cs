@@ -142,6 +142,7 @@ namespace p5rpc.misc.customizablemerciless
             }
             
             var memory = Memory.Instance;
+
             Exp_Multiplier = memory.Allocate(4).Address;
             Money_Multiplier = memory.Allocate(4).Address;
             Merciless_Taken_Multiplier = memory.Allocate(4).Address;
@@ -151,12 +152,11 @@ namespace p5rpc.misc.customizablemerciless
             Merciless_Taken_Weak_Multiplier = memory.Allocate(4).Address;
             Merciless_Given_Weak_Multiplier = memory.Allocate(4).Address;
 
+            Unknown_Money_Multiplier = memory.Allocate(4).Address;
             Default_Multiplier = memory.Allocate(4).Address;
             Safe_Exp_Money_Multiplier = memory.Allocate(4).Address;
             Easy_Exp_Money_Multiplier = memory.Allocate(4).Address;
-            Hard_Taken_Multiplier = memory.Allocate(4).Address;
-
-            Unknown_Money_Multiplier = memory.Allocate(4).Address;
+            Hard_Taken_Multiplier = memory.Allocate(4).Address; 
 
             memory.Write(Exp_Multiplier, (float)_configuration.MercilessExp);
             memory.Write(Money_Multiplier, (float)_configuration.MercilessMoney);
@@ -167,12 +167,11 @@ namespace p5rpc.misc.customizablemerciless
             memory.Write(Merciless_Taken_Weak_Multiplier, (float)_configuration.MercilessWeakTaken);
             memory.Write(Merciless_Given_Weak_Multiplier, (float)_configuration.MercilessWeakGiven);
 
+            memory.Write(Unknown_Money_Multiplier, 1.15F);
             memory.Write(Default_Multiplier, 1F);
             memory.Write(Safe_Exp_Money_Multiplier, 1.5F);
             memory.Write(Easy_Exp_Money_Multiplier, 1.2F);
             memory.Write(Hard_Taken_Multiplier, 1.6F);
-
-            memory.Write(Unknown_Money_Multiplier, 1.15F);
 
             // Exp & Money
 
