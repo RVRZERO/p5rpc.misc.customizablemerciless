@@ -81,7 +81,6 @@ namespace p5rpc.misc.customizablemerciless
 
         private nuint Unknown_Money_Multiplier;
 
-
         public Mod(ModContext context)
         {
             _modLoader = context.ModLoader;
@@ -177,125 +176,7 @@ namespace p5rpc.misc.customizablemerciless
 
             // Exp & Money
 
-            SigScan("84 C0 74 ?? 0F 28 FE EB ?? B9 61 00 00 40", "SAFE_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    $"movss xmm11, [dword {Safe_Exp_Money_Multiplier}]",
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("E8 ?? ?? ?? ?? 84 C0 75 ?? B9 62 00 00 40 E8 ?? ?? ?? ?? 84 C0 74", "EASY_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    "jz end_of_hook",
-                    $"movss xmm7, [dword {Easy_Exp_Money_Multiplier}]",
-                    $"movss xmm11, [dword {Easy_Exp_Money_Multiplier}]",
-                    "label end_of_hook"
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("84 C0 74 ?? 41 0F 28 F9 EB ?? B9 63 00 00 40", "NORMAL_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    $"movss xmm11, [dword {Default_Multiplier}]",
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("84 C0 74 ?? 41 0F 28 F9 EB ?? B9 64 00 00 40", "HARD_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    $"movss xmm11, [dword {Default_Multiplier}]",
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("F3 0F 10 3D ?? ?? ?? ?? E8 ?? ?? ?? ?? 44 0F 28 E0", "SEPARATE_EASY_EXP_MULTIPLIER", address =>
-            {
-                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 8))));
-            });
-
-            SigScan("E8 ?? ?? ?? ?? 84 C0 74 ?? F3 0F 10 3D ?? ?? ?? ?? E8", "MERCILESS_EXP_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    "jz end_of_hook",
-                    $"movss xmm7, [dword {Exp_Multiplier}]",
-                    $"movss xmm11, [dword {Money_Multiplier}]",
-                    "label end_of_hook"
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("84 C0 74 ?? 44 0F 28 DE", "SAFE_INSTAKILL_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    $"movss xmm8, [dword {Safe_Exp_Money_Multiplier}]",
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("F3 44 0F 10 1D ?? ?? ?? ?? EB ?? 85 C0", "EASY_INSTAKILL_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    $"movss xmm8, [dword {Easy_Exp_Money_Multiplier}]"
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("E8 ?? ?? ?? ?? 84 C0 75 ?? B9 63 00 00 40 E8 ?? ?? ?? ?? 84 C0 75 ?? B9 64 00 00 40 E8 ?? ?? ?? ?? 84 C0 74 ?? F3 44 0F 10 1D", "NORMAL_INSTAKILL_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    "jz end_of_hook",
-                    $"movss xmm8, [dword {Default_Multiplier}]",
-                    "label end_of_hook"
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("E8 ?? ?? ?? ?? 84 C0 75 ?? B9 64 00 00 40 E8 ?? ?? ?? ?? 84 C0 74 ?? F3 44 0F 10 1D", "HARD_INSTAKILL_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    "jz end_of_hook",
-                    $"movss xmm8, [dword {Default_Multiplier}]",
-                    "label end_of_hook"
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
-            });
-
-            SigScan("F3 44 0F 10 1D ?? ?? ?? ?? EB ?? 45 0F 28 DC", "MERCILESS_INSTAKILL_EXP_MONEY_MULTIPLIER_HOOK_ADDRESS", address =>
-            {
-                string[] Function =
-                {
-                    "use64",
-                    $"movss xmm8, [dword {Money_Multiplier}]",
-                    $"movss xmm11, [dword {Exp_Multiplier}]"
-                };
-                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
-            });
-
-            // Separate money multiplier from exp multiplier
-
-            SigScan(                                                   "44 0F 28 DF 44 8B 5C 24", "SEPARATE_MONEY_MULTIPLIER_1", address =>
+            SigScan("44 0F 28 DF 44 8B 5C 24", "SEPARATE_MONEY_MULTIPLIER_1", address =>
             {
                 memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 4))));
             });
@@ -310,12 +191,75 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
 
-            SigScan(                                                   "45 0F 28 C3 48 8D 15", "SEPARATE_MONEY_MULTIPLIER_3", address =>
+            SigScan("84 C0 74 ?? 0F 28 FE EB ?? B9 61 00 00 40", "SET_SAFE_MONEY_MULTIPLIER", address =>
             {
-               memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 4))));
+                string[] Function =
+                {
+                    "use64",
+                    $"movss xmm11, [dword {Safe_Exp_Money_Multiplier}]",
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
             });
 
-            SigScan("F3 44 0F 59 05 ?? ?? ?? ?? E9 ?? ?? ?? ?? 85 C0", "SEPARATE_MONEY_MULTIPLIER_4", address =>
+            SigScan("F3 0F 10 3D ?? ?? ?? ?? E8 ?? ?? ?? ?? 44 0F 28 E0", "SEPARATE_EASY_EXP_MULTIPLIER", address =>
+            {
+                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 8))));
+            });
+
+            SigScan("E8 ?? ?? ?? ?? 84 C0 75 ?? B9 62 00 00 40 E8 ?? ?? ?? ?? 84 C0 74", "SET_EASY_EXP_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    "jz end_of_hook",
+                    $"movss xmm7, [dword {Easy_Exp_Money_Multiplier}]",
+                    $"movss xmm11, [dword {Easy_Exp_Money_Multiplier}]",
+                    "label end_of_hook"
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            SigScan("84 C0 74 ?? 41 0F 28 F9 EB ?? B9 63 00 00 40", "SET_NORMAL_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    $"movss xmm11, [dword {Default_Multiplier}]",
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            SigScan("84 C0 74 ?? 41 0F 28 F9 EB ?? B9 64 00 00 40", "SET_HARD_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    $"movss xmm11, [dword {Default_Multiplier}]",
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            SigScan("E8 ?? ?? ?? ?? 84 C0 74 ?? F3 0F 10 3D ?? ?? ?? ?? E8", "SET_MERCILESS_EXP_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    "jz end_of_hook",
+                    $"movss xmm7, [dword {Exp_Multiplier}]",
+                    $"movss xmm11, [dword {Money_Multiplier}]",
+                    "label end_of_hook"
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            // Exp & Money for Ryuji's Instakill ability
+
+            SigScan("45 0F 28 C3 48 8D 15", "SEPARATE_MONEY_INSTAKILL_MULTIPLIER_1", address =>
+            {
+                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 4))));
+            });
+
+            SigScan("F3 44 0F 59 05 ?? ?? ?? ?? E9 ?? ?? ?? ?? 85 C0", "SEPARATE_MONEY_INSTAKILL_MULTIPLIER_2", address =>
             {
                 string[] Function =
                 {
@@ -325,9 +269,74 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
 
-            // Damage Receieved & Dealt
+            SigScan("84 C0 74 ?? 44 0F 28 DE", "SET_SAFE_INSTAKILL_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    $"movss xmm8, [dword {Safe_Exp_Money_Multiplier}]",
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
 
-            SigScan("84 C0 74 ?? 66 83 F9 02", "HARD_TAKEN_MULTIPLIER_HOOK_ADDRESS", address =>
+            SigScan("F3 44 0F 10 1D ?? ?? ?? ?? EB ?? 85 C0", "SET_EASY_INSTAKILL_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    $"movss xmm8, [dword {Easy_Exp_Money_Multiplier}]"
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            SigScan("E8 ?? ?? ?? ?? 84 C0 75 ?? B9 63 00 00 40 E8 ?? ?? ?? ?? 84 C0 75 ?? B9 64 00 00 40 E8 ?? ?? ?? ?? 84 C0 74 ?? F3 44 0F 10 1D", "SET_NORMAL_INSTAKILL_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    "jz end_of_hook",
+                    $"movss xmm8, [dword {Default_Multiplier}]",
+                    "label end_of_hook"
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            SigScan("E8 ?? ?? ?? ?? 84 C0 75 ?? B9 64 00 00 40 E8 ?? ?? ?? ?? 84 C0 74 ?? F3 44 0F 10 1D", "SET_HARD_INSTAKILL_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    "jz end_of_hook",
+                    $"movss xmm8, [dword {Default_Multiplier}]",
+                    "label end_of_hook"
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
+            });
+
+            SigScan("F3 44 0F 10 1D ?? ?? ?? ?? EB ?? 45 0F 28 DC", "SET_MERCILESS_INSTAKILL_EXP_MONEY_MULTIPLIER", address =>
+            {
+                string[] Function =
+                {
+                    "use64",
+                    $"movss xmm8, [dword {Money_Multiplier}]",
+                    $"movss xmm11, [dword {Exp_Multiplier}]"
+                };
+                reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
+            });
+
+            // Damage Taken & Given
+
+            SigScan("41 0F 28 F6 EB ?? F3 0F 10 35 ?? ?? ?? ?? 41 8B 4C 24", "SEPARATE_HARD_TAKEN_1", address =>
+            {
+                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 4))));
+            });
+
+            SigScan("F3 0F 10 35 ?? ?? ?? ?? 41 8B 4C 24", "SEPARATE_HARD_TAKEN_2", address =>
+            {
+                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 8))));
+            });
+
+            SigScan("84 C0 74 ?? 66 83 F9 02", "SET_HARD_TAKEN_MULTIPLIER", address =>
             {
                 string[] Function =
                 {
@@ -339,7 +348,7 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
             });
 
-            SigScan("E8 ?? ?? ?? ?? 84 C0 74 ?? 66 83 7B ?? 02 74 ?? 41 0F 28 F6", "MERCILESS_TAKEN_MULTIPLIER_HOOK_ADDRESS", address =>
+            SigScan("E8 ?? ?? ?? ?? 84 C0 74 ?? 66 83 7B ?? 02 74 ?? 41 0F 28 F6", "SET_MERCILESS_TAKEN_MULTIPLIER", address =>
             {
                 string[] Function =
                 {
@@ -351,7 +360,7 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
             });
 
-            SigScan("66 83 7B ?? 02 74 ?? 41 0F 28 F6", "MERCILESS_GIVEN_MULTIPLIER_HOOK_ADDRESS", address =>
+            SigScan("66 83 7B ?? 02 74 ?? 41 0F 28 F6", "SET_MERCILESS_GIVEN_MULTIPLIER", address =>
             {
                 string[] Function =
                 {
@@ -361,19 +370,9 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
             });
 
-            SigScan(                                                   "41 0F 28 F6 EB ?? F3 0F 10 35 ?? ?? ?? ?? 41 8B 4C 24", "SEPARATE_HARD_TAKEN_1", address =>
-            {
-                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 4))));
-            });
+            // Merciless critical, technical, & weakness multipliers
 
-            SigScan(                                                   "F3 0F 10 35 ?? ?? ?? ?? 41 8B 4C 24", "SEPARATE_HARD_TAKEN_2", address =>
-            {
-                memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 8))));
-            });
-
-            // Merciless Special Multipliers
-
-            SigScan("F3 0F 59 35 ?? ?? ?? ?? E9 ?? ?? ?? ?? 66 83 FE 04", "MERCILESS_CRITICAL_TECHNICAL_MULTIPLIER_HOOK_ADDRESS", address =>
+            SigScan("F3 0F 59 35 ?? ?? ?? ?? E9 ?? ?? ?? ?? 66 83 FE 04", "SET_MERCILESS_CRITICAL_TECHNICAL_MULTIPLIER", address =>
             {
                 string[] Function =
                 {
@@ -389,7 +388,7 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
 
-            SigScan("F3 0F 59 35 ?? ?? ?? ?? B9 D8 01 00 30", "MERCILESS_WEAKNESS_MULTIPLIER_HOOK_ADDRESS", address =>
+            SigScan("F3 0F 59 35 ?? ?? ?? ?? B9 D8 01 00 30", "SET_MERCILESS_WEAKNESS_MULTIPLIER", address =>
             {
                 string[] Function =
                 {
@@ -405,9 +404,11 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
 
+            // Merciless gallows exp rate toggle
+
             if (!_configuration.GallowsExp)
             {
-                SigScan("74 ?? B8 56 55 55 55 41 F7 E8", "PERSONA_SACRIFICE_EXP_MULTIPLIER", address =>
+                SigScan("74 ?? B8 56 55 55 55 41 F7 E8", "GALLOWS_EXP_MULTIPLIER", address =>
                 {
                     memory.SafeWrite((nuint)address, Convert.FromHexString(string.Concat(Enumerable.Repeat("90", 27))));
                 });
