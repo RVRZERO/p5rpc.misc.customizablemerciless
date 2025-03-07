@@ -1,4 +1,4 @@
-## Configuration
+## Use .toml Configuration
 To adjust the configurations with your mod, create `CustomizableMerciless.toml` in your mod directory and use the layout below:
 
 ```toml
