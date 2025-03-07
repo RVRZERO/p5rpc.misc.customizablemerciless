@@ -30,49 +30,49 @@ namespace p5rpc.misc.customizablemerciless.Configuration
         [DisplayName("Damage Taken")]
         [Description("Write the multiplier for Damage Taken in Merciless difficulty.")]
         [DefaultValue(1.60D)]
-        public double MercilessTaken { get; set; } = 1.60D;
+        public double DamageTaken { get; set; } = 1.60D;
 
         [Category("Multipliers")]
         [DisplayName("Damage Given")]
         [Description("Write the multiplier for Damage Given in Merciless difficulty.")]
         [DefaultValue(0.8D)]
-        public double MercilessGiven { get; set; } = 0.8D;
+        public double DamageGiven { get; set; } = 0.8D;
 
         [Category("Multipliers")]
         [DisplayName("Exp Won")]
         [Description("Write the multiplier for Exp Won in Merciless difficulty.")]
         [DefaultValue(1.20D)]
-        public double MercilessExp { get; set; } = 1.20D;
+        public double ExpWon { get; set; } = 1.20D;
 
         [Category("Multipliers")]
         [DisplayName("Money Won")]
         [Description("Write the multiplier for Money Won in Merciless difficulty.")]
         [DefaultValue(1.20D)]
-        public double MercilessMoney { get; set; } = 1.20D;
+        public double MoneyWon { get; set; } = 1.20D;
 
         [Category("Multipliers")]
         [DisplayName("Weakness Taken")]
         [Description("Write the multiplier for Weakness Taken attacks in Merciless difficulty.")]
         [DefaultValue(3.00D)]
-        public double MercilessWeakTaken { get; set; } = 3.00D;
+        public double WeaknessTaken { get; set; } = 3.00D;
 
         [Category("Multipliers")]
         [DisplayName("Weakness Given")]
         [Description("Write the multiplier for Weakness Given attacks in Merciless difficulty.")]
         [DefaultValue(3.00D)]
-        public double MercilessWeakGiven { get; set; } = 3.00D;
+        public double WeaknessGiven { get; set; } = 3.00D;
 
         [Category("Multipliers")]
         [DisplayName("Critical & Technical Taken")]
         [Description("Write the multiplier for Technical & Critical Taken attacks in Merciless difficulty.")]
         [DefaultValue(3.00D)]
-        public double MercilessCritTechTaken { get; set; } = 3.00D;
+        public double CritTechTaken { get; set; } = 3.00D;
 
         [Category("Multipliers")]
         [DisplayName("Critical & Technical Given")]
         [Description("Write the multiplier for Technical & Critical Given attacks in Merciless difficulty.")]
         [DefaultValue(3.00D)]
-        public double MercilessCritTechGiven { get; set; } = 3.00D;
+        public double CritTechGiven { get; set; } = 3.00D;
 
         [Category("Others")]
         [DisplayName("1/3 Gallows Exp Rate")]

@@ -65,14 +65,14 @@ namespace p5rpc.misc.customizablemerciless
         private nuint Merciless_Given_CritTech_Multiplier;
         private nuint Merciless_Taken_Weak_Multiplier;
         private nuint Merciless_Given_Weak_Multiplier;
-        private nuint Merciless_Taken_Multiplier;
-        private nuint Merciless_Given_Multiplier;
+        private nuint Merciless_Damage_Taken_Multiplier;
+        private nuint Merciless_Damage_Given_Multiplier;
 
-        private nuint Unknown_Money_Multiplier;
+        private nuint Money_Unknown_Multiplier;
         private nuint Default_Multiplier;
         private nuint Safe_Exp_Money_Multiplier;
         private nuint Easy_Exp_Money_Multiplier;
-        private nuint Hard_Taken_Multiplier;
+        private nuint Hard_Damage_Taken_Multiplier;
 
         private bool applied = false;
 
@@ -100,24 +100,24 @@ namespace p5rpc.misc.customizablemerciless
 
             Exp_Multiplier = memory.Allocate(4).Address;
             Money_Multiplier = memory.Allocate(4).Address;
-            Merciless_Taken_Multiplier = memory.Allocate(4).Address;
-            Merciless_Given_Multiplier = memory.Allocate(4).Address;
+            Merciless_Damage_Taken_Multiplier = memory.Allocate(4).Address;
+            Merciless_Damage_Given_Multiplier = memory.Allocate(4).Address;
             Merciless_Taken_CritTech_Multiplier = memory.Allocate(4).Address;
             Merciless_Given_CritTech_Multiplier = memory.Allocate(4).Address;
             Merciless_Taken_Weak_Multiplier = memory.Allocate(4).Address;
             Merciless_Given_Weak_Multiplier = memory.Allocate(4).Address;
 
-            Unknown_Money_Multiplier = memory.Allocate(4).Address;
+            Money_Unknown_Multiplier = memory.Allocate(4).Address;
             Default_Multiplier = memory.Allocate(4).Address;
             Safe_Exp_Money_Multiplier = memory.Allocate(4).Address;
             Easy_Exp_Money_Multiplier = memory.Allocate(4).Address;
-            Hard_Taken_Multiplier = memory.Allocate(4).Address; 
+            Hard_Damage_Taken_Multiplier = memory.Allocate(4).Address; 
 
-            memory.Write(Unknown_Money_Multiplier, 1.15F);
+            memory.Write(Money_Unknown_Multiplier, 1.15F);
             memory.Write(Default_Multiplier, 1F);
             memory.Write(Safe_Exp_Money_Multiplier, 1.5F);
             memory.Write(Easy_Exp_Money_Multiplier, 1.2F);
-            memory.Write(Hard_Taken_Multiplier, 1.6F);
+            memory.Write(Hard_Damage_Taken_Multiplier, 1.6F);
 
             this._modLoader.ModLoading += this.OnModLoading;
             this._modLoader.OnModLoaderInitialized += this.OnModLoaderInitialized;
@@ -134,7 +134,7 @@ namespace p5rpc.misc.customizablemerciless
                 string[] Function =
                 {
                     "use64",
-                    $"mulss xmm11, [dword {Unknown_Money_Multiplier}]"
+                    $"mulss xmm11, [dword {Money_Unknown_Multiplier}]"
                 };
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
@@ -212,7 +212,7 @@ namespace p5rpc.misc.customizablemerciless
                 string[] Function =
                 {
                     "use64",
-                    $"mulss xmm8, [dword {Unknown_Money_Multiplier}]"
+                    $"mulss xmm8, [dword {Money_Unknown_Multiplier}]"
                 };
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
@@ -290,7 +290,7 @@ namespace p5rpc.misc.customizablemerciless
                 {
                     "use64",
                     "jnz end_of_hook",
-                    $"movss xmm6, [dword {Hard_Taken_Multiplier}]",
+                    $"movss xmm6, [dword {Hard_Damage_Taken_Multiplier}]",
                     "label end_of_hook"
                 };
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
@@ -302,7 +302,7 @@ namespace p5rpc.misc.customizablemerciless
                 {
                     "use64",
                     "jz end_of_hook",
-                    $"movss xmm6, [dword {Merciless_Taken_Multiplier}]",
+                    $"movss xmm6, [dword {Merciless_Damage_Taken_Multiplier}]",
                     "label end_of_hook"
                 };
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
@@ -313,7 +313,7 @@ namespace p5rpc.misc.customizablemerciless
                 string[] Function =
                 {
                     "use64",
-                    $"movss xmm6, [dword {Merciless_Given_Multiplier}]",
+                    $"movss xmm6, [dword {Merciless_Damage_Given_Multiplier}]",
                 };
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.ExecuteAfter).Activate();
             });
@@ -386,14 +386,14 @@ namespace p5rpc.misc.customizablemerciless
                     }
                 }
 
-                _configuration.MercilessTaken = Convert.ToDouble(tomlDict["Multipliers"]["DamageTaken"]);
-                _configuration.MercilessGiven = Convert.ToDouble(tomlDict["Multipliers"]["DamageGiven"]);
-                _configuration.MercilessExp = Convert.ToDouble(tomlDict["Multipliers"]["ExpWon"]);
-                _configuration.MercilessMoney = Convert.ToDouble(tomlDict["Multipliers"]["MoneyWon"]);
-                _configuration.MercilessWeakTaken = Convert.ToDouble(tomlDict["Multipliers"]["WeaknessTaken"]);
-                _configuration.MercilessWeakGiven = Convert.ToDouble(tomlDict["Multipliers"]["WeaknessGiven"]);
-                _configuration.MercilessCritTechTaken = Convert.ToDouble(tomlDict["Multipliers"]["CritTechTaken"]);
-                _configuration.MercilessCritTechGiven = Convert.ToDouble(tomlDict["Multipliers"]["CritTechGiven"]);
+                _configuration.DamageTaken = Convert.ToDouble(tomlDict["Multipliers"]["DamageTaken"]);
+                _configuration.DamageGiven = Convert.ToDouble(tomlDict["Multipliers"]["DamageGiven"]);
+                _configuration.ExpWon = Convert.ToDouble(tomlDict["Multipliers"]["ExpWon"]);
+                _configuration.MoneyWon = Convert.ToDouble(tomlDict["Multipliers"]["MoneyWon"]);
+                _configuration.WeaknessTaken = Convert.ToDouble(tomlDict["Multipliers"]["WeaknessTaken"]);
+                _configuration.WeaknessGiven = Convert.ToDouble(tomlDict["Multipliers"]["WeaknessGiven"]);
+                _configuration.CritTechTaken = Convert.ToDouble(tomlDict["Multipliers"]["CritTechTaken"]);
+                _configuration.CritTechGiven = Convert.ToDouble(tomlDict["Multipliers"]["CritTechGiven"]);
 
                 _configuration.GallowsExp = Convert.ToBoolean(tomlDict["Others"]["GallowsExp"]);
                 _configuration.ReturnSafeRoom = Convert.ToBoolean(tomlDict["Others"]["ReturnSafeRoom"]);
@@ -402,14 +402,14 @@ namespace p5rpc.misc.customizablemerciless
 
             // Debug lines
 
-            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.MercilessExp.ToString());
-            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MercilessMoney.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.MercilessTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.MercilessGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.MercilessCritTechTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.MercilessCritTechGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.MercilessWeakTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.MercilessWeakGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.ExpWon.ToString());
+            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MoneyWon.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.DamageTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.DamageGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.CritTechTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.CritTechGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.WeaknessTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.WeaknessGiven.ToString());
 
             _logger.WriteLine("Customizable Merciless: 1/3 Gallows Exp Rate: " + _configuration.GallowsExp.ToString());
             _logger.WriteLine("Customizable Merciless: Return to Prior Safe/Waiting Room: " + _configuration.ReturnSafeRoom.ToString());
@@ -433,14 +433,14 @@ namespace p5rpc.misc.customizablemerciless
 
             var memory = Memory.Instance;
 
-            memory.Write(Exp_Multiplier, (float)_configuration.MercilessExp);
-            memory.Write(Money_Multiplier, (float)_configuration.MercilessMoney);
-            memory.Write(Merciless_Taken_Multiplier, (float)_configuration.MercilessTaken);
-            memory.Write(Merciless_Given_Multiplier, (float)_configuration.MercilessGiven);
-            memory.Write(Merciless_Taken_CritTech_Multiplier, (float)_configuration.MercilessCritTechTaken);
-            memory.Write(Merciless_Given_CritTech_Multiplier, (float)_configuration.MercilessCritTechGiven);
-            memory.Write(Merciless_Taken_Weak_Multiplier, (float)_configuration.MercilessWeakTaken);
-            memory.Write(Merciless_Given_Weak_Multiplier, (float)_configuration.MercilessWeakGiven);
+            memory.Write(Exp_Multiplier, (float)_configuration.ExpWon);
+            memory.Write(Money_Multiplier, (float)_configuration.MoneyWon);
+            memory.Write(Merciless_Damage_Taken_Multiplier, (float)_configuration.DamageTaken);
+            memory.Write(Merciless_Damage_Given_Multiplier, (float)_configuration.DamageGiven);
+            memory.Write(Merciless_Taken_CritTech_Multiplier, (float)_configuration.CritTechTaken);
+            memory.Write(Merciless_Given_CritTech_Multiplier, (float)_configuration.CritTechGiven);
+            memory.Write(Merciless_Taken_Weak_Multiplier, (float)_configuration.WeaknessTaken);
+            memory.Write(Merciless_Given_Weak_Multiplier, (float)_configuration.WeaknessGiven);
 
             // Merciless gallows exp rate toggle
 
@@ -462,14 +462,14 @@ namespace p5rpc.misc.customizablemerciless
 
             // Debug lines
 
-            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.MercilessExp.ToString());
-            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MercilessMoney.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.MercilessTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.MercilessGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.MercilessCritTechTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.MercilessCritTechGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.MercilessWeakTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.MercilessWeakGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.ExpWon.ToString());
+            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MoneyWon.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.DamageTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.DamageGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.CritTechTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.CritTechGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.WeaknessTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.WeaknessGiven.ToString());
 
             _logger.WriteLine("Customizable Merciless: 1/3 Gallows Exp Rate: " + _configuration.GallowsExp.ToString());
             _logger.WriteLine("Customizable Merciless: Return to Prior Safe/Waiting Room: " + _configuration.ReturnSafeRoom.ToString());
