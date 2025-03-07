@@ -1,5 +1,5 @@
 ## Using .toml Configuration
-To adjust the configuration with your mod, create `CustomizableMerciless.toml` in your mod directory and use the layout below:
+To adjust the configuration with your mod, add Customizable Merciless to your mod dependencies, then create `CustomizableMerciless.toml` in your mod directory and use the layout below:
 
 ```toml
 [Multipliers]
