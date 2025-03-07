@@ -1,5 +1,5 @@
-## Use .toml Configuration
-To adjust the configurations with your mod, create `CustomizableMerciless.toml` in your mod directory and use the layout below:
+## Using .toml Configuration
+To adjust the configuration with your mod, create `CustomizableMerciless.toml` in your mod directory and use the layout below:
 
 ```toml
 [Multipliers]
@@ -15,3 +15,6 @@ CritTechGiven = 3
 [Others]
 GallowsExp = true
 ReturnSafeRoom = false
+toml```
+
+As long as the user has the "Use .toml Configuration" option enabled (which is enabled by default), the .toml configuration will overwrite the Reloaded-II configuration.

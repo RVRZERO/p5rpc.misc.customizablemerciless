@@ -86,8 +86,8 @@ namespace p5rpc.misc.customizablemerciless.Configuration
         [DefaultValue(false)]
         public bool ReturnSafeRoom { get; set; } = false;
 
-        [DisplayName("Use .toml configuration")]
-        [Description("Enable this to let other mods overwrite the configurations using a .toml file.")]
+        [DisplayName("Use .toml Configuration")]
+        [Description("Enable this to let other mods overwrite Reloaded-II configuration using a .toml file.")]
         [DefaultValue(true)]
         public bool AllowToml { get; set; } = true;
     }
