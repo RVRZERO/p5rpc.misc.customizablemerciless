@@ -15,6 +15,6 @@ CritTechGiven = 3
 [Others]
 GallowsExp = true
 ReturnSafeRoom = false
-toml```
+```
 
 As long as the user has the "Use .toml Configuration" option enabled (which is enabled by default), the .toml configuration will overwrite the Reloaded-II configuration.
