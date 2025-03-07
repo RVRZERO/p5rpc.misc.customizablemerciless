@@ -84,7 +84,12 @@ namespace p5rpc.misc.customizablemerciless.Configuration
         [DisplayName("Return to Prior\nSafe/Waiting Room")]
         [Description("Enable this to be able to Return to Prior Safe/Waiting Room in Merciless difficulty.")]
         [DefaultValue(false)]
-        public bool RetryButton { get; set; } = false;
+        public bool ReturnSafeRoom { get; set; } = false;
+
+        [DisplayName("Use .toml configuration")]
+        [Description("Enable this to let other mods overwrite the configurations using a .toml file.")]
+        [DefaultValue(true)]
+        public bool AllowToml { get; set; } = true;
     }
 
     /// <summary>

@@ -14,6 +14,10 @@ using BF.File.Emulator;
 using BF.File.Emulator.Interfaces;
 using CriFs.V2.Hook;
 using CriFs.V2.Hook.Interfaces;
+using System.Runtime.CompilerServices;
+using Reloaded.Mod.Interfaces.Internal;
+using Tomlyn;
+using Tomlyn.Model;
 
 namespace p5rpc.misc.customizablemerciless
 {
@@ -55,31 +59,22 @@ namespace p5rpc.misc.customizablemerciless
 
         internal static nint BaseAddress { get; private set; }
 
-        private nuint Safe_Exp_Money_Multiplier;
-
-        private nuint Easy_Exp_Money_Multiplier;
-
-        private nuint Default_Multiplier;
-
         private nuint Exp_Multiplier;
-
         private nuint Money_Multiplier;
-
         private nuint Merciless_Taken_CritTech_Multiplier;
-
         private nuint Merciless_Given_CritTech_Multiplier;
-
         private nuint Merciless_Taken_Weak_Multiplier;
-
         private nuint Merciless_Given_Weak_Multiplier;
-
         private nuint Merciless_Taken_Multiplier;
-
-        private nuint Hard_Taken_Multiplier;
-
         private nuint Merciless_Given_Multiplier;
 
         private nuint Unknown_Money_Multiplier;
+        private nuint Default_Multiplier;
+        private nuint Safe_Exp_Money_Multiplier;
+        private nuint Easy_Exp_Money_Multiplier;
+        private nuint Hard_Taken_Multiplier;
+
+        private bool applied = false;
 
         public Mod(ModContext context)
         {
@@ -95,52 +90,12 @@ namespace p5rpc.misc.customizablemerciless
             using var thisProcess = Process.GetCurrentProcess();
             BaseAddress = thisProcess.MainModule!.BaseAddress;
 
-            var criFsController = _modLoader.GetController<ICriFsRedirectorApi>();
-            if (criFsController == null || !criFsController.TryGetTarget(out var criFsApi))
-            {
-                throw new Exception("Failed to get ICriFsRedirectorApi Controller");
-            }
-
-            var BfEmulatorController = _modLoader.GetController<IBfEmulator>();
-            if (BfEmulatorController == null || !BfEmulatorController.TryGetTarget(out var BfEmulator))
-            {
-                throw new Exception("Failed to get IBfEmulator Controller");
-            }
-
-            var startupScannerController = _modLoader.GetController<IStartupScanner>();
-            if (startupScannerController == null || !startupScannerController.TryGetTarget(out var startupScanner))
-            {
-                throw new Exception("Failed to get IStartupScanner Controller");
-            }
-
             var reloadedHooksController = _modLoader.GetController<IReloadedHooks>();
             if (reloadedHooksController == null || !reloadedHooksController.TryGetTarget(out var reloadedHooks))
             {
                 throw new Exception("Failed to get IReloadedHooks Controller");
             }
 
-            void SigScan(string pattern, string name, Action<nint> action)
-            {
-                startupScanner.AddMainModuleScan(pattern, result =>
-                {
-                    if (result.Found)
-                    {
-                        action(result.Offset + BaseAddress);
-                        _logger.WriteLine($"Customizable Merciless: {name} Signature Found: {result.Offset + BaseAddress:X}");
-                    }
-                    else
-                    {
-                        _logger.WriteLine($"Customizable Merciless: {name}: Signature Not Found ");
-                    }
-                });
-            }
-
-            if ( _configuration.RetryButton )
-            {
-                criFsApi.AddProbingPath(Path.Combine(modDir, $"RetryButton"));
-                BfEmulator.AddDirectory(Path.Combine(modDir, $"RetryButton"));
-            }
-            
             var memory = Memory.Instance;
 
             Exp_Multiplier = memory.Allocate(4).Address;
@@ -158,20 +113,14 @@ namespace p5rpc.misc.customizablemerciless
             Easy_Exp_Money_Multiplier = memory.Allocate(4).Address;
             Hard_Taken_Multiplier = memory.Allocate(4).Address; 
 
-            memory.Write(Exp_Multiplier, (float)_configuration.MercilessExp);
-            memory.Write(Money_Multiplier, (float)_configuration.MercilessMoney);
-            memory.Write(Merciless_Taken_Multiplier, (float)_configuration.MercilessTaken);
-            memory.Write(Merciless_Given_Multiplier, (float)_configuration.MercilessGiven);
-            memory.Write(Merciless_Taken_CritTech_Multiplier, (float)_configuration.MercilessCritTechTaken);
-            memory.Write(Merciless_Given_CritTech_Multiplier, (float)_configuration.MercilessCritTechGiven);
-            memory.Write(Merciless_Taken_Weak_Multiplier, (float)_configuration.MercilessWeakTaken);
-            memory.Write(Merciless_Given_Weak_Multiplier, (float)_configuration.MercilessWeakGiven);
-
             memory.Write(Unknown_Money_Multiplier, 1.15F);
             memory.Write(Default_Multiplier, 1F);
             memory.Write(Safe_Exp_Money_Multiplier, 1.5F);
             memory.Write(Easy_Exp_Money_Multiplier, 1.2F);
             memory.Write(Hard_Taken_Multiplier, 1.6F);
+
+            this._modLoader.ModLoading += this.OnModLoading;
+            this._modLoader.OnModLoaderInitialized += this.OnModLoaderInitialized;
 
             // Exp & Money
 
@@ -403,6 +352,96 @@ namespace p5rpc.misc.customizablemerciless
                 reloadedHooks.CreateAsmHook(Function, address, AsmHookBehaviour.DoNotExecuteOriginal).Activate();
             });
 
+            // For more information about this template, please see
+            // https://reloaded-project.github.io/Reloaded-II/ModTemplate/
+
+            // If you want to implement e.g. unload support in your mod,
+            // and some other neat features, override the methods in ModBase.
+
+            // TODO: Implement some mod logic
+        }
+        private void OnModLoading(IModV1 mod, IModConfigV1 config)
+        {
+            var modDir = this._modLoader.GetDirectoryForModId(config.ModId);
+            var tomlDir = Path.Join(modDir, "CustomizableMerciless.toml");
+
+            if (File.Exists(tomlDir) & !applied & config.ModDependencies.Contains(this._modConfig.ModId) & _configuration.AllowToml)
+            {
+                string tomlContent = System.IO.File.ReadAllText(tomlDir);
+                var tomlDoc = Toml.Parse(tomlContent);
+                var tomlDict = new Dictionary<string, Dictionary<string, object>>();
+                foreach (var table in tomlDoc.ToModel())
+                {
+                    var sectionName = table.Key;
+                    var sectionData = table.Value as TomlTable;
+
+                    if (sectionData != null)
+                    {
+                        var sectionDict = new Dictionary<string, object>();
+                        foreach (var kvp in sectionData)
+                        {
+                            sectionDict[kvp.Key] = kvp.Value;
+                        }
+                        tomlDict[sectionName] = sectionDict;
+                    }
+                }
+
+                _configuration.MercilessTaken = Convert.ToDouble(tomlDict["Multipliers"]["DamageTaken"]);
+                _configuration.MercilessGiven = Convert.ToDouble(tomlDict["Multipliers"]["DamageGiven"]);
+                _configuration.MercilessExp = Convert.ToDouble(tomlDict["Multipliers"]["ExpWon"]);
+                _configuration.MercilessMoney = Convert.ToDouble(tomlDict["Multipliers"]["MoneyWon"]);
+                _configuration.MercilessWeakTaken = Convert.ToDouble(tomlDict["Multipliers"]["WeaknessTaken"]);
+                _configuration.MercilessWeakGiven = Convert.ToDouble(tomlDict["Multipliers"]["WeaknessGiven"]);
+                _configuration.MercilessCritTechTaken = Convert.ToDouble(tomlDict["Multipliers"]["CritTechTaken"]);
+                _configuration.MercilessCritTechGiven = Convert.ToDouble(tomlDict["Multipliers"]["CritTechGiven"]);
+
+                _configuration.GallowsExp = Convert.ToBoolean(tomlDict["Others"]["GallowsExp"]);
+                _configuration.ReturnSafeRoom = Convert.ToBoolean(tomlDict["Others"]["ReturnSafeRoom"]);
+                applied = true;
+            }
+
+            // Debug lines
+
+            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.MercilessExp.ToString());
+            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MercilessMoney.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.MercilessTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.MercilessGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.MercilessCritTechTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.MercilessCritTechGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.MercilessWeakTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.MercilessWeakGiven.ToString());
+
+            _logger.WriteLine("Customizable Merciless: 1/3 Gallows Exp Rate: " + _configuration.GallowsExp.ToString());
+            _logger.WriteLine("Customizable Merciless: Return to Prior Safe/Waiting Room: " + _configuration.ReturnSafeRoom.ToString());
+        }
+
+        private void OnModLoaderInitialized()
+        {
+            var criFsController = _modLoader.GetController<ICriFsRedirectorApi>();
+            if (criFsController == null || !criFsController.TryGetTarget(out var criFsApi))
+            {
+                throw new Exception("Failed to get ICriFsRedirectorApi Controller");
+            }
+
+            var BfEmulatorController = _modLoader.GetController<IBfEmulator>();
+            if (BfEmulatorController == null || !BfEmulatorController.TryGetTarget(out var BfEmulator))
+            {
+                throw new Exception("Failed to get IBfEmulator Controller");
+            }
+
+            var modDir = _modLoader.GetDirectoryForModId(_modConfig.ModId);
+
+            var memory = Memory.Instance;
+
+            memory.Write(Exp_Multiplier, (float)_configuration.MercilessExp);
+            memory.Write(Money_Multiplier, (float)_configuration.MercilessMoney);
+            memory.Write(Merciless_Taken_Multiplier, (float)_configuration.MercilessTaken);
+            memory.Write(Merciless_Given_Multiplier, (float)_configuration.MercilessGiven);
+            memory.Write(Merciless_Taken_CritTech_Multiplier, (float)_configuration.MercilessCritTechTaken);
+            memory.Write(Merciless_Given_CritTech_Multiplier, (float)_configuration.MercilessCritTechGiven);
+            memory.Write(Merciless_Taken_Weak_Multiplier, (float)_configuration.MercilessWeakTaken);
+            memory.Write(Merciless_Given_Weak_Multiplier, (float)_configuration.MercilessWeakGiven);
+
             // Merciless gallows exp rate toggle
 
             if (!_configuration.GallowsExp)
@@ -413,13 +452,49 @@ namespace p5rpc.misc.customizablemerciless
                 });
             }
 
-            // For more information about this template, please see
-            // https://reloaded-project.github.io/Reloaded-II/ModTemplate/
+            // Return to prior safe/waiting room toggle
 
-            // If you want to implement e.g. unload support in your mod,
-            // and some other neat features, override the methods in ModBase.
+            if (_configuration.ReturnSafeRoom)
+            {
+                criFsApi.AddProbingPath(Path.Combine(modDir, $"ReturnSafeRoom"));
+                BfEmulator.AddDirectory(Path.Combine(modDir, $"ReturnSafeRoom"));
+            }
 
-            // TODO: Implement some mod logic
+            // Debug lines
+
+            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.MercilessExp.ToString());
+            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MercilessMoney.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.MercilessTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.MercilessGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.MercilessCritTechTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.MercilessCritTechGiven.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.MercilessWeakTaken.ToString());
+            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.MercilessWeakGiven.ToString());
+
+            _logger.WriteLine("Customizable Merciless: 1/3 Gallows Exp Rate: " + _configuration.GallowsExp.ToString());
+            _logger.WriteLine("Customizable Merciless: Return to Prior Safe/Waiting Room: " + _configuration.ReturnSafeRoom.ToString());
+        }
+
+        private void SigScan(string pattern, string name, Action<nint> action)
+        {
+            var startupScannerController = _modLoader.GetController<IStartupScanner>();
+            if (startupScannerController == null || !startupScannerController.TryGetTarget(out var startupScanner))
+            {
+                throw new Exception("Failed to get IStartupScanner Controller");
+            }
+
+            startupScanner.AddMainModuleScan(pattern, result =>
+            {
+                if (result.Found)
+                {
+                    action(result.Offset + BaseAddress);
+                    _logger.WriteLine($"Customizable Merciless: {name} Signature Found: {result.Offset + BaseAddress:X}");
+                }
+                else
+                {
+                    _logger.WriteLine($"Customizable Merciless: {name}: Signature Not Found ");
+                }
+            });
         }
 
         #region Standard Overrides
