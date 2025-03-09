@@ -399,20 +399,6 @@ namespace p5rpc.misc.customizablemerciless
                 _configuration.ReturnSafeRoom = Convert.ToBoolean(tomlDict["Others"]["ReturnSafeRoom"]);
                 applied = true;
             }
-
-            // Debug lines
-
-            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.ExpWon.ToString());
-            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MoneyWon.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.DamageTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.DamageGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.CritTechTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.CritTechGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.WeaknessTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.WeaknessGiven.ToString());
-
-            _logger.WriteLine("Customizable Merciless: 1/3 Gallows Exp Rate: " + _configuration.GallowsExp.ToString());
-            _logger.WriteLine("Customizable Merciless: Return to Prior Safe/Waiting Room: " + _configuration.ReturnSafeRoom.ToString());
         }
 
         private void OnModLoaderInitialized()
@@ -459,20 +445,6 @@ namespace p5rpc.misc.customizablemerciless
                 criFsApi.AddProbingPath(Path.Combine(modDir, $"ReturnSafeRoom"));
                 BfEmulator.AddDirectory(Path.Combine(modDir, $"ReturnSafeRoom"));
             }
-
-            // Debug lines
-
-            _logger.WriteLine("Customizable Merciless: Exp Won: " + _configuration.ExpWon.ToString());
-            _logger.WriteLine("Customizable Merciless: Money Won: " + _configuration.MoneyWon.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Taken: " + _configuration.DamageTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Damage Dealt: " + _configuration.DamageGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Taken: " + _configuration.CritTechTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Critical & Technical Given: : " + _configuration.CritTechGiven.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Taken: " + _configuration.WeaknessTaken.ToString());
-            _logger.WriteLine("Customizable Merciless: Weakness Given: " + _configuration.WeaknessGiven.ToString());
-
-            _logger.WriteLine("Customizable Merciless: 1/3 Gallows Exp Rate: " + _configuration.GallowsExp.ToString());
-            _logger.WriteLine("Customizable Merciless: Return to Prior Safe/Waiting Room: " + _configuration.ReturnSafeRoom.ToString());
         }
 
         private void SigScan(string pattern, string name, Action<nint> action)
